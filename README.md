@@ -1,48 +1,53 @@
-# Compra Clara · pruebas móviles
+# Compra Clara · versión 0.3
 
-Web estática sin compilación, dependencias externas, analítica ni IA en el navegador. Solo contiene datos ficticios. Versión 0.2.
+Interfaz y demo para probar en el móvil. Web estática publicada en https://miguitel.github.io/compra-clara-web/ mediante GitHub Pages: rama main, carpeta /docs.
 
-## Publicación prevista
+## Conectar los datos privados
 
-Repositorio: miGUITel/compra-clara-web (público).
+1. Pulsa Conectar en la cabecera, o Conectar mis datos en Preferencias.
+2. Introduce directamente en la web un token de GitHub con acceso al repositorio privado miGUITel/compra-clara-datos y Contents: lectura y escritura. Un token fine-grained limitado a ese repositorio es suficiente. No pegues el token en mensajes ni archivos.
+3. La app carga catálogo, reglas, propuestas y lista. No mezcla la demo con la lista privada.
+4. Añade productos, indica cantidades y marca lo comprado. Pulsa Guardar en GitHub para enviar los cambios.
+5. En otro dispositivo, conecta y pulsa Actualizar para recuperar la última lista.
 
-1. Crear el repositorio con una rama main.
-2. Subir este directorio conservando docs/.
-3. En Settings → Pages, elegir Deploy from a branch, main y /docs; pulsar Save.
-4. Esperar el despliegue y comprobar la URL que GitHub muestre. La URL prevista es https://miGUITel.github.io/compra-clara-web/; no está activa hasta que se publique correctamente.
+Las credenciales del conector del asistente no se comparten con la web. El usuario introduce su propio token. La primera conexión y el primer guardado con ese token requieren comprobación en la web; las pruebas simuladas no acreditan sus permisos personales.
 
-Referencia oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+## Datos y guardado
 
-## Uso de la demo
+- El repositorio público contiene solo código y datos ficticios de demostración.
+- La demo conserva su lista en localStorage. Los datos privados y el token permanecen solo en memoria; no se almacenan en localStorage, sessionStorage, IndexedDB, cookies ni archivos de configuración.
+- Recargar o cerrar termina la conexión. Los cambios pendientes se perderían; el navegador avisa y se ofrece Descargar copia.
+- Desconectar limpia las referencias a credenciales y datos privados, y vuelve a la demo.
+- La app lee las cuatro referencias privadas desde un mismo commit para evitar mezclar versiones.
+- Solo escribe estado.json, con el SHA de la versión leída. No modifica el catálogo, las reglas ni las propuestas revisadas por el asistente.
+- Después de escribir vuelve a leer el archivo del commit confirmado y comprueba el contenido. Los fallos de red, respuestas incompletas y errores del servidor pueden dejar un resultado incierto: se conserva el borrador y se bloquea el reenvío.
+- Si hay conflicto, Revisar GitHub permite comparar ambas listas, descargar el borrador y elegir explícitamente cargar la versión de GitHub. Una lectura fallida conserva lo anterior. No hay reintentos ni sobrescrituras automáticas.
+- Se conservan campos adicionales de estado.json, productos añadidos manualmente y correcciones anteriores.
 
-Añadir y editar productos, marcar comprados, filtrar, copiar pendientes, añadir propuestas, indicar existencias, excluir productos, cambiar fechas, exportar JSON y restablecer. El botón Secciones muestra u oculta los encabezados y recuerda la elección; se mantiene el orden numérico, incluida la sección 3.1.
+Las propuestas son datos fijos preparados por el asistente. Cambiar fechas no recalcula un menú ni estima existencias. La app no ejecuta IA, no lee Drive, no analiza nuevos tickets y no garantiza funcionamiento sin conexión.
 
-Los cambios permanecen en localStorage de ese navegador y origen. El portátil y el móvil tienen listas independientes. Las propuestas son ejemplos fijos. La app no lee tickets, no envía compras a GitHub y no funciona sin conexión garantizada. Exportar copia antes de borrar datos del navegador.
+## Interfaz
 
-## Estructura
+Filas compactas, contraste reforzado, controles de 44 px y secciones opcionales. Ocultar secciones conserva el recorrido numérico, incluida la sección 3.1 entre 3 y 4.
 
-- docs/index.html: interfaz.
-- docs/styles.css: estilos con fuentes del sistema, contraste reforzado y filas compactas.
-- docs/app.mjs: interacción y guardado local.
-- docs/logic.mjs: orden, cantidades y validación.
-- docs/data.json: catálogo y propuestas ficticios.
-- docs/.nojekyll: publicación estática directa.
+Se pueden añadir, editar y retirar productos, marcar comprados, filtrar, copiar pendientes, revisar propuestas, indicar Todavía tengo o Ya no lo compro, cambiar fechas y exportar la lista. Los productos sin cantidad confirmada requieren que se indique al añadirlos. Añadir propuestas incorpora las que ya tienen cantidad orientativa; las demás se revisan individualmente.
 
-## Próxima fase: datos privados
+## Código
 
-El repositorio privado miGUITel/compra-clara-datos está reservado para la siguiente fase, separado de esta web. Mantener catálogo, reglas y propuestas revisadas en JSON versionados y el estado diario en un archivo independiente. Si se replica el acceso de la app de UT/Módulos, el token irá solo en memoria y las escrituras comprobarán el SHA antes de guardar. Esa integración aún no está implementada.
+- docs/app.mjs: interfaz, separación entre demo y sesión privada.
+- docs/logic.mjs: orden, cantidades y validación básica.
+- docs/data-model.mjs: validación de los documentos privados.
+- docs/github-store.mjs: acceso exclusivo al repositorio privado, UTF-8, SHA y confirmación de guardados.
+- docs/private-session.mjs: borrador, operaciones pendientes, bloqueo y revisión.
+- docs/data.json: ejemplos públicos ficticios.
+- tests/private-data.test.mjs: pruebas sintéticas sin enviar datos a GitHub.
 
-El análisis periódico prepara datos y explica propuestas; la app aplica esas reglas fijas. Nunca incluir tokens, tickets, precios pagados ni historiales personales en el repositorio público.
+No se usan dependencias externas, CDN ni scripts de terceros. La política CSP limita código y estilos al mismo origen y conexiones al propio origen y api.github.com. Los textos privados se escapan antes de mostrarse.
 
-## Comprobación en móvil después de publicar
+## Verificación
 
-- Abrir a 320–430 px: ninguna fila debe obligar a desplazarse horizontalmente.
-- Añadir un producto, cambiar cantidad, marcarlo y comprobar los tres filtros.
-- Activar/desactivar Secciones: mismo orden y misma lista; recargar y comprobar la preferencia.
-- Probar Añadir, Tengo, fechas y copia de pendientes.
-- Recargar y comprobar que se conserva la lista.
-- Comprobar texto legible en las tarjetas de propuestas y fecha.
+Ejecutar: node --test tests/private-data.test.mjs
 
-## Cambios 0.2
+Las pruebas cubren lecturas coherentes, escritura con SHA, dos dispositivos, conservación del borrador, respuestas perdidas, errores de permisos, datos inválidos, campos adicionales, UTF-8, desconexión y bloqueo de envíos simultáneos. No crean productos de prueba en los datos reales.
 
-Corregido el empaquetado de estilos del HTML portátil: el import de Google Fonts incluía puntos y coma dentro de la URL y el recorte anterior eliminaba las variables CSS. Ahora se usan fuentes del sistema. Textos secundarios más oscuros, controles de 44 px, filas más compactas, menos cabecera en móvil y secciones opcionales, ocultas al iniciar.
+Documentación de referencia: https://docs.github.com/en/rest/repos/contents y https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens

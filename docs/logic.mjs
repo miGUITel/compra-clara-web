@@ -32,11 +32,12 @@ export function listText(state, products) {
 }
 export function validState(value, data) {
   const sections = new Set(data.sections.map(s => s[0]));
-  const date = str => typeof str === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(str) && !Number.isNaN(Date.parse(str));
+  const date = str => typeof str === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(str) && !Number.isNaN(Date.parse(str)) && new Date(str + 'T12:00:00Z').toISOString().slice(0,10) === str;
   return value?.schemaVersion === 1 && (value.showSections === undefined || typeof value.showSections === 'boolean') && Array.isArray(value.items)
-    && value.items.every(i => i && typeof i.id === 'string' && typeof i.name === 'string' && i.name.trim() && i.name.length <= 100 && sections.has(i.section) && typeof i.quantity === 'string' && i.quantity.length <= 100 && typeof i.done === 'boolean')
+    && value.items.length <= 2000 && value.items.every(i => i && typeof i.id === 'string' && typeof i.name === 'string' && i.name.trim() && i.name.length <= 100 && sections.has(i.section) && typeof i.quantity === 'string' && i.quantity.trim() && i.quantity.length <= 100 && typeof i.done === 'boolean')
     && new Set(value.items.map(i => i.id)).size === value.items.length
     && ['snoozed','excludedIds','feedback'].every(k => Array.isArray(value[k]))
     && ['snoozed','excludedIds'].every(k => value[k].every(id => typeof id === 'string'))
+    && value.feedback.every(f => f && typeof f === 'object' && typeof f.productId === 'string')
     && date(value.tripDate) && date(value.nextDate) && value.nextDate > value.tripDate;
 }
