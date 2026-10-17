@@ -1,5 +1,5 @@
-import { clone, validatePrivateState } from './data-model.mjs?v=0.4';
-import { GithubError } from './github-store.mjs?v=0.4';
+import { clone, validatePrivateState } from './data-model.mjs?v=0.4.1';
+import { GithubError } from './github-store.mjs?v=0.4.1';
 export class PrivateSession {
   #store;
   constructor(store){this.#store=store;this.data=null;this.state=null;this.sha=null;this.commit=null;this.dirty=false;this.blocked=false;this.busy=false;}

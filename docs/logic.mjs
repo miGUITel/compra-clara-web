@@ -25,7 +25,8 @@ export function addItem(state, product, quantity, source = 'manual') {
   return item;
 }
 export function availableSuggestions(data, state) {
-  return data.suggestions.filter(s => !state.excludedIds.includes(s.id) && !state.snoozed.includes(s.id));
+  return data.suggestions.filter(s => !state.excludedIds.includes(s.id) && !state.snoozed.includes(s.id)
+    && !(state.deferredUntil?.[s.id] && state.deferredUntil[s.id] >= state.tripDate));
 }
 export function listText(state, products) {
   return sortedItems(state, products).filter(i => !i.done).map(i => `${i.name} - ${i.quantity}`).join('\n');

@@ -1,4 +1,4 @@
-import { normalize } from './logic.mjs?v=0.4';
+import { normalize } from './logic.mjs?v=0.4.1';
 
 const DAY = 86400000;
 const clone = value => JSON.parse(JSON.stringify(value));

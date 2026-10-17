@@ -1,8 +1,8 @@
-import { bindPlanner } from './planner-ui.mjs?v=0.4';
-import { isDay, validatePlanner, validatePlanningState } from './planner.mjs?v=0.4';
-import { normalize, sortedItems, addItem, availableSuggestions, listText, validState } from './logic.mjs?v=0.4';
-import { GithubStore } from './github-store.mjs?v=0.4';
-import { PrivateSession } from './private-session.mjs?v=0.4';
+import { bindPlanner } from './planner-ui.mjs?v=0.4.1';
+import { isDay, validatePlanner, validatePlanningState } from './planner.mjs?v=0.4.1';
+import { normalize, sortedItems, addItem, availableSuggestions, listText, validState } from './logic.mjs?v=0.4.1';
+import { GithubStore } from './github-store.mjs?v=0.4.1';
+import { PrivateSession } from './private-session.mjs?v=0.4.1';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const icon = name => `<svg aria-hidden="true"><use href="#${name}"/></svg>`;

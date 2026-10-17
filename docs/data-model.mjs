@@ -1,5 +1,5 @@
-import { validState } from './logic.mjs?v=0.4';
-import { validatePlanner, validatePlanningState } from './planner.mjs?v=0.4';
+import { validState } from './logic.mjs?v=0.4.1';
+import { validatePlanner, validatePlanningState } from './planner.mjs?v=0.4.1';
 const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const text = (v, max = 1000) => typeof v === 'string' && v.length <= max;
 const nonempty = (v, max = 1000) => text(v,max) && !!v.trim();

@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {availableSuggestions} from '../docs/logic.mjs?v=0.4.1';
 import { isDay, addDays, monday, cycleWeek, nextVisit, nextWeekday, validatePlanner,
-  validatePlanningState, proposePurchase, applyPurchase } from '../docs/planner.mjs?v=0.4';
+  validatePlanningState, proposePurchase, applyPurchase } from '../docs/planner.mjs?v=0.4.1';
 
 const fixture=()=>{
  const data=JSON.parse(fs.readFileSync(new URL('../docs/data.json',import.meta.url),'utf8'));
@@ -11,6 +12,11 @@ const fixture=()=>{
  return {data,state};
 };
 const options={tripDate:'2026-10-20',nextDate:'2026-10-23'};
+test('dated postponements also filter the sidebar and the ordinary proposal tab',()=>{
+ const {data,state}=fixture();state.deferredUntil={'ejemplo-platanos':'2026-10-20'};
+ assert.ok(!availableSuggestions(data,state).some(s=>s.id==='ejemplo-platanos'));
+ state.tripDate='2026-10-21';assert.ok(availableSuggestions(data,state).some(s=>s.id==='ejemplo-platanos'));
+});
 test('cycle repeats every four weeks, across months, years and dates before anchor',()=>{
  const anchor={date:'2026-10-12',week:3};
  assert.equal(cycleWeek('2026-10-17',anchor),3);

@@ -1,4 +1,4 @@
-import { isDay, monday, cycleWeek, nextVisit, nextWeekday, proposePurchase, applyPurchase } from './planner.mjs?v=0.4';
+import { isDay, monday, cycleWeek, nextVisit, nextWeekday, proposePurchase, applyPurchase } from './planner.mjs?v=0.4.1';
 
 // All state access is supplied by the existing session. This module has no
 // storage or networking and never receives a GitHub token.
@@ -70,7 +70,8 @@ export function bindPlanner({getData,getState,setState,save,render,notify,escape
     event.preventDefault();if(busy()||!preview)return;
     const applied=applyPurchase(getState(),preview,selected());
     setState(applied.state);save();render();$('#plan-dialog').close();
-    notify(`${applied.added.length} productos añadidos. Revisa cantidades y guarda los cambios${getData().source?.reference?' en GitHub':''}.`);
+    const amount=applied.added.length,privateData=!!getData().source?.reference;
+    notify(`${amount} producto${amount===1?' añadido':'s añadidos'}. Revisa cantidades.${privateData?' Guarda los cambios en GitHub.':''}`);
   });
   $('#plan-dialog').addEventListener('close',()=>{clear();$('#plan-bases').textContent='';$('#plan-reference').textContent='';$('#plan-count').textContent='';$('#plan-form').reset();});
   function refresh() {

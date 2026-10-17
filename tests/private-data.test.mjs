@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.4';
-import { PrivateSession } from '../docs/private-session.mjs?v=0.4';
-import { assembleData, validatePrivateState, clone } from '../docs/data-model.mjs?v=0.4';
-import { sortedItems, validState } from '../docs/logic.mjs?v=0.4';
-import { proposePurchase, applyPurchase } from '../docs/planner.mjs?v=0.4';
+import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.4.1';
+import { PrivateSession } from '../docs/private-session.mjs?v=0.4.1';
+import { assembleData, validatePrivateState, clone } from '../docs/data-model.mjs?v=0.4.1';
+import { sortedItems, validState } from '../docs/logic.mjs?v=0.4.1';
+import { proposePurchase, applyPurchase } from '../docs/planner.mjs?v=0.4.1';
 
 const sha=value=>createHash('sha1').update(JSON.stringify(value)).digest('hex');
 const fixtures=()=>({
