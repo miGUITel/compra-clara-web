@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#174e3d">
+  <meta name="description" content="Tu compra organizada por pasillos. Una demo con datos ficticios para probar tu lista en el móvil.">
+  <title>Compra Clara · Tu lista de la compra</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23174e3d'/%3E%3Cpath d='M16 27h32l-4 23H20zM24 27l8-15 8 15' fill='none' stroke='%23e7f0c1' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.mjs"></script>
+</head>
+<body>
+<svg class="svg-library" aria-hidden="true"><defs>
+  <symbol id="basket" viewBox="0 0 24 24"><path d="M3 9h18l-2 12H5L3 9Zm4 0 5-7 5 7M9 13v4m6-4v4"/></symbol>
+  <symbol id="list" viewBox="0 0 24 24"><path d="m3 6 1 1 2-2m3 1h12M3 12l1 1 2-2m3 1h12M3 18l1 1 2-2m3 1h12"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3ZM20 2v4m-2-2h4"/></symbol>
+  <symbol id="sliders" viewBox="0 0 24 24"><path d="M4 7h5m4 0h7M4 17h9m4 0h3M9 4v6m4 4v6M13 7H9m4 10h4"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1"/></symbol>
+  <symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="3"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
+  <symbol id="close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="leaf" viewBox="0 0 24 24"><path d="M20 3C8 2 3 8 5 15c4 9 17 4 15-12ZM4 21 15 10"/></symbol>
+  <symbol id="download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></symbol>
+</defs></svg>
+<header class="app-header">
+  <a class="brand" href="#lista" aria-label="Compra Clara, inicio"><span class="brand-icon"><svg><use href="#basket"/></svg></span><span>compra<span class="brand-light">clara</span><span class="brand-dot">.</span></span></a>
+  <nav class="navigation" aria-label="Navegación principal">
+    <button data-view="lista" aria-current="page"><svg><use href="#list"/></svg><span>Mi lista</span></button>
+    <button data-view="propuestas"><svg><use href="#spark"/></svg><span>Propuestas</span><b id="nav-count">6</b></button>
+    <button data-view="preferencias"><svg><use href="#sliders"/></svg><span>Preferencias</span></button>
+  </nav>
+  <span class="demo-badge"><i></i> Demo 0.2</span>
+</header>
+<main id="app-main">
+  <section id="view-lista" class="view">
+    <div class="page-intro">
+      <div><p class="eyebrow">MENOS VUELTAS. MÁS CLARIDAD.</p><h1>Todo en su sitio<span>.</span></h1><p class="intro-copy">Tu lista, en el orden de tu supermercado.</p></div>
+      <div class="intro-controls"><button id="date-button" class="date-button"><svg><use href="#calendar"/></svg><span id="trip-label"></span></button><button class="button primary add-open"><svg><use href="#plus"/></svg>Añadir producto</button></div>
+    </div>
+    <div class="workspace">
+      <section class="list-card" aria-label="Lista de la compra">
+        <div class="list-header"><div><h2>Mi lista <span id="total-count" class="count-pill"></span></h2><p id="list-subtitle">Preparada para tu próxima visita</p></div><button id="copy-list" class="icon-button" title="Copiar lista" aria-label="Copiar lista"><svg><use href="#copy"/></svg></button></div>
+        <div class="list-tools"><div class="filter-tabs" role="group" aria-label="Filtrar productos"><button data-filter="all" class="selected" aria-pressed="true">Todo</button><button data-filter="pending" aria-pressed="false">Pendiente <span id="pending-count"></span></button><button data-filter="done" aria-pressed="false">Comprado</button></div><button id="toggle-sections" class="section-toggle" aria-pressed="false" title="Mostrar u ocultar las secciones; se conserva el orden"><svg aria-hidden="true"><use href="#list"/></svg>Secciones</button></div>
+        <div id="progress-wrap"><div class="progress-caption"><span id="progress-label"></span><span id="progress-percent"></span></div><div class="progress-track"><div id="progress-fill"></div></div></div>
+        <div id="shopping-list"></div>
+        <button class="list-add add-open"><svg><use href="#plus"/></svg>Añadir algo más</button>
+        <div class="list-bottom"><svg><use href="#check"/></svg><span id="save-status">Guardado en este dispositivo</span><button id="clear-done" hidden>Retirar comprados</button></div>
+      </section>
+      <aside class="sidebar">
+        <section class="suggestion-panel"><div class="panel-eyebrow"><svg><use href="#spark"/></svg>UN POCO DE AYUDA</div><h2>Para no olvidarte</h2><p>Algunas propuestas para que tú decidas.</p><div id="sidebar-suggestions"></div><button class="all-proposals" data-view="propuestas">Ver todas las propuestas <svg><use href="#arrow"/></svg></button><span class="suggestion-note">Ejemplos de reposición; comprueba lo que tienes.</span></section>
+        <section class="next-trip"><span class="small-icon"><svg><use href="#calendar"/></svg></span><div><p>Siguiente visita</p><button id="next-trip-button"><span id="next-trip-label"></span> <span>↗</span></button><small>La lista cubre hasta esa fecha.</small></div></section>
+        <section class="quiet-note"><svg><use href="#leaf"/></svg><p>Comprar lo justo también es<br>una buena costumbre.</p></section>
+      </aside>
+    </div>
+  </section>
+  <section id="view-propuestas" class="view" hidden>
+    <div class="page-intro"><div><p class="eyebrow">TÚ TIENES LA ÚLTIMA PALABRA</p><h1>¿Te falta algo<span>?</span></h1><p class="intro-copy">Añade lo que necesites o indica que todavía tienes.</p></div><button id="add-all" class="button primary"><svg><use href="#plus"/></svg>Añadir propuestas</button></div>
+    <div class="notice"><svg><use href="#spark"/></svg><p>Estas propuestas son ficticias. Sirven para probar la app y no se basan en tu historial de compras.</p></div>
+    <div id="proposal-grid" class="proposal-grid"></div>
+    <div id="snoozed-area" class="snoozed-area" hidden><span id="snoozed-label"></span><button id="restore-suggestions" class="text-button">Volver a mostrarlas</button></div>
+  </section>
+  <section id="view-preferencias" class="view" hidden>
+    <div class="page-intro"><div><p class="eyebrow">HECHA A TU MANERA</p><h1>Los pequeños detalles<span>.</span></h1><p class="intro-copy">Tus formatos, tu recorrido y tus decisiones.</p></div></div>
+    <div class="settings-grid"><section class="settings-card"><h2>Pruebas en el móvil</h2><p>Productos y cantidades ficticios para probar la interfaz.</p><ul class="rule-list"><li><span class="rule-icon">01</span><div><strong>Añade y marca productos</strong><small>La lista se guarda en este navegador.</small></div></li><li><span class="rule-icon">02</span><div><strong>Muestra u oculta secciones</strong><small>El botón Secciones cambia las etiquetas; el orden se conserva.</small></div></li><li><span class="rule-icon">03</span><div><strong>Revisa las propuestas</strong><small>Puedes añadirlas o indicar que todavía tienes.</small></div></li></ul><h3>No proponer</h3><div id="exclusions" class="chips"></div></section>
+    <section class="settings-card"><h2>Tu recorrido</h2><p>De menor a mayor, con especias en la sección 3.1.</p><div id="route-list" class="route-list"></div></section>
+    <section class="settings-card demo-details"><h2>Acerca de esta demo</h2><p>La lista inicial y las cantidades son de ejemplo. Puedes modificarlas sin afectar a tus datos originales.</p><p>Los cambios se guardan en este navegador. Todavía no se sincronizan con GitHub ni entre dispositivos. Puedes descargar tu lista y tus correcciones.</p><div class="settings-actions"><button id="export-data" class="button secondary"><svg><use href="#download"/></svg>Descargar copia</button><button id="reset-demo" class="text-button danger">Restablecer demo</button></div><small id="feedback-count"></small></section></div>
+  </section>
+  <footer class="page-footer"><span>Una compra más sencilla.</span><span>Demo 0.2 · Guardado en este dispositivo</span></footer>
+</main>
+<button class="mobile-add add-open" aria-label="Añadir producto"><svg><use href="#plus"/></svg></button>
+<dialog id="product-dialog" aria-labelledby="product-dialog-title"><form id="product-form"><div class="dialog-header"><div><p class="eyebrow" id="product-kicker">A TU LISTA</p><h2 id="product-dialog-title">Añadir producto</h2></div><button type="button" class="icon-button close-dialog" aria-label="Cerrar"><svg><use href="#close"/></svg></button></div><label for="product-name">Producto</label><div class="search-field"><svg><use href="#search"/></svg><input id="product-name" maxlength="100" required placeholder="Busca o escribe un producto" autocomplete="off" aria-controls="product-matches" aria-expanded="false"></div><div id="product-matches" class="product-matches" hidden></div><div class="form-row"><div><label for="product-qty">Cantidad</label><input id="product-qty" required maxlength="40" placeholder="Ej.: 3 envases o 1 kg"></div><div><label for="product-section">Sección</label><select id="product-section"></select></div></div><p class="field-help">Puedes escribir la cantidad como te resulte más cómodo.</p><div id="edit-actions" class="edit-actions" hidden><button id="have-product" type="button" class="text-button">Todavía tengo</button><button id="exclude-product" type="button" class="text-button">Ya no lo compro</button><button id="remove-product" type="button" class="text-button danger">Quitar de la lista</button></div><div class="dialog-footer"><button type="button" class="button secondary close-dialog">Cancelar</button><button type="submit" class="button primary" id="product-submit">Añadir a mi lista</button></div></form></dialog>
+<dialog id="dates-dialog" aria-labelledby="dates-title"><form id="dates-form"><div class="dialog-header"><div><p class="eyebrow">PLANIFICA TU VISITA</p><h2 id="dates-title">¿Cuándo vas a comprar?</h2></div><button type="button" class="icon-button close-dialog" aria-label="Cerrar"><svg><use href="#close"/></svg></button></div><label for="trip-date">Esta compra</label><input type="date" id="trip-date" required><label for="next-date">Siguiente visita</label><input type="date" id="next-date" required><p class="field-help">Las fechas se conservan para esta lista. Las sugerencias de la demo son ejemplos y no se recalculan a partir del menú.</p><div class="dialog-footer"><button type="button" class="button secondary close-dialog">Cancelar</button><button type="submit" class="button primary">Guardar fechas</button></div></form></dialog>
+<dialog id="copy-dialog" aria-labelledby="copy-title"><div class="dialog-header"><h2 id="copy-title">Tu lista para copiar</h2><button class="icon-button close-dialog" aria-label="Cerrar"><svg><use href="#close"/></svg></button></div><textarea id="copy-text" rows="14" readonly></textarea><p class="field-help">Mantén pulsado el texto para seleccionarlo y copiarlo.</p></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body></html>

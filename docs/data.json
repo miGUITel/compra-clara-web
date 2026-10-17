@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "sections": [
+    [
+      "1",
+      "Preparados"
+    ],
+    [
+      "2",
+      "Charcutería y quesos"
+    ],
+    [
+      "3",
+      "Carne"
+    ],
+    [
+      "3.1",
+      "Especias"
+    ],
+    [
+      "4",
+      "Pescado"
+    ],
+    [
+      "5",
+      "Congelados"
+    ],
+    [
+      "6",
+      "Conservas"
+    ],
+    [
+      "7",
+      "Pan"
+    ],
+    [
+      "8",
+      "Lácteos"
+    ],
+    [
+      "9",
+      "Cereales"
+    ],
+    [
+      "10",
+      "Postres"
+    ],
+    [
+      "11",
+      "Hogar"
+    ],
+    [
+      "12",
+      "Higiene"
+    ],
+    [
+      "13",
+      "Mantequilla"
+    ],
+    [
+      "14",
+      "Despensa"
+    ],
+    [
+      "15",
+      "Bebidas"
+    ],
+    [
+      "16",
+      "Fruta y verdura"
+    ]
+  ],
+  "excluded": [],
+  "products": [
+    {
+      "id": "ejemplo-pollo",
+      "name": "Pollo",
+      "section": "3",
+      "quantity": "1 bandeja",
+      "emoji": "🍗"
+    },
+    {
+      "id": "ejemplo-garbanzos",
+      "name": "Garbanzos cocidos",
+      "section": "6",
+      "quantity": "1 bote",
+      "emoji": "🥫"
+    },
+    {
+      "id": "ejemplo-pan",
+      "name": "Pan integral",
+      "section": "7",
+      "quantity": "1 barra",
+      "emoji": "🍞"
+    },
+    {
+      "id": "ejemplo-yogur",
+      "name": "Yogur natural",
+      "section": "8",
+      "quantity": "4 unidades",
+      "emoji": "🥛"
+    },
+    {
+      "id": "ejemplo-arroz",
+      "name": "Arroz",
+      "section": "14",
+      "quantity": "1 kg",
+      "emoji": "🍚"
+    },
+    {
+      "id": "ejemplo-huevos",
+      "name": "Huevos",
+      "section": "14",
+      "quantity": "6 unidades",
+      "emoji": "🥚"
+    },
+    {
+      "id": "ejemplo-leche",
+      "name": "Leche",
+      "section": "15",
+      "quantity": "1 litro",
+      "emoji": "🥛"
+    },
+    {
+      "id": "ejemplo-patatas",
+      "name": "Patatas",
+      "section": "16",
+      "quantity": "1 kg",
+      "emoji": "🥔"
+    },
+    {
+      "id": "ejemplo-tomates",
+      "name": "Tomates",
+      "section": "16",
+      "quantity": "0,5 kg",
+      "emoji": "🍅"
+    },
+    {
+      "id": "ejemplo-manzanas",
+      "name": "Manzanas",
+      "section": "16",
+      "quantity": "1 kg",
+      "emoji": "🍎"
+    },
+    {
+      "id": "ejemplo-queso",
+      "name": "Queso",
+      "section": "2",
+      "quantity": "1 envase",
+      "emoji": "🧀"
+    },
+    {
+      "id": "ejemplo-guisantes",
+      "name": "Guisantes congelados",
+      "section": "5",
+      "quantity": "1 bolsa",
+      "emoji": "🫛"
+    },
+    {
+      "id": "ejemplo-platanos",
+      "name": "Plátanos",
+      "section": "16",
+      "quantity": "0,5 kg",
+      "emoji": "🍌"
+    }
+  ],
+  "initialList": [
+    "ejemplo-pollo",
+    "ejemplo-garbanzos",
+    "ejemplo-pan",
+    "ejemplo-yogur",
+    "ejemplo-arroz",
+    "ejemplo-huevos",
+    "ejemplo-leche",
+    "ejemplo-patatas",
+    "ejemplo-tomates",
+    "ejemplo-manzanas"
+  ],
+  "suggestions": [
+    {
+      "id": "ejemplo-queso",
+      "short": "Ejemplo · 1 envase",
+      "reason": "Propuesta de ejemplo para probar la interfaz. Comprueba lo que tienes antes de añadirla."
+    },
+    {
+      "id": "ejemplo-guisantes",
+      "short": "Ejemplo · 1 bolsa",
+      "reason": "Propuesta de ejemplo para probar la interfaz. Comprueba lo que tienes antes de añadirla."
+    },
+    {
+      "id": "ejemplo-platanos",
+      "short": "Ejemplo · 0,5 kg",
+      "reason": "Propuesta de ejemplo para probar la interfaz. Comprueba lo que tienes antes de añadirla."
+    }
+  ]
+}
