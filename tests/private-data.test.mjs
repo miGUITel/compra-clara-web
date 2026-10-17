@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.3.1';
-import { PrivateSession } from '../docs/private-session.mjs?v=0.3.1';
-import { assembleData, validatePrivateState, clone } from '../docs/data-model.mjs?v=0.3';
-import { sortedItems, validState } from '../docs/logic.mjs?v=0.3';
+import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.4';
+import { PrivateSession } from '../docs/private-session.mjs?v=0.4';
+import { assembleData, validatePrivateState, clone } from '../docs/data-model.mjs?v=0.4';
+import { sortedItems, validState } from '../docs/logic.mjs?v=0.4';
+import { proposePurchase, applyPurchase } from '../docs/planner.mjs?v=0.4';
 
 const sha=value=>createHash('sha1').update(JSON.stringify(value)).digest('hex');
 const fixtures=()=>({
@@ -52,6 +53,24 @@ function fakeGithub() {
   return server;
 }
 async function connected(server){const session=new PrivateSession(new GithubStore({token:'test-only-token',fetchImpl:server.fetch}));await session.connect();return session;}
+
+test('eight bases load in a private snapshot and an applied plan survives a verified save',async()=>{
+  const server=fakeGithub();
+  server.externalChange(docs=>{
+    docs['propuestas.json'].planner={version:1,anchor:{date:'2026-10-12',week:3},notice:'Datos de prueba.',habits:[],
+      templates:Array.from({length:4},(_,i)=>[2,5].map(day=>({week:i+1,day,label:`Semana ${i+1} día ${day}`,
+        entries:[{id:'a',reason:'Ingrediente de prueba'},{id:'b',reason:'Cantidad pendiente de prueba'}],notes:[]}))).flat()};
+  });
+  const original=server.docs,s=await connected(server);
+  const p=proposePurchase(s.data,s.state,{tripDate:'2026-10-20',nextDate:'2026-10-23'});
+  const applied=applyPurchase(s.state,p,p.items.map(i=>i.id));s.changed(applied.state);
+  await s.save();
+  assert.equal(s.state.items.length,2);assert.equal(s.state.items.find(i=>i.id==='b').needsQuantity,true);
+  assert.equal(s.state.plan.week,4);assert.equal(s.state.cycleAnchor.week,3);
+  for(const file of ['catalogo.json','reglas.json','propuestas.json'])assert.deepEqual(server.docs[file],original[file]);
+  assert.ok(server.calls.filter(c=>c.method==='PUT').every(c=>c.path.endsWith('/estado.json')));
+  assert.deepEqual(s.state,server.docs['estado.json']);
+});
 function add(session,name='Nuevo producto') {session.state.items.push({id:'custom-test',name,section:'3.1',quantity:'2 unidades',done:false,source:'manual'});session.changed(session.state);}
 
 test('Unicode and literal markup survive UTF-8 encoding',()=>{

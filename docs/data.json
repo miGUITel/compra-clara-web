@@ -192,5 +192,189 @@
       "short": "Ejemplo · 0,5 kg",
       "reason": "Propuesta de ejemplo para probar la interfaz. Comprueba lo que tienes antes de añadirla."
     }
-  ]
+  ],
+  "planner": {
+    "version": 1,
+    "anchor": {
+      "date": "2026-10-12",
+      "week": 1
+    },
+    "notice": "Compras de ejemplo inventadas para probar el ciclo. Conecta para usar tus ocho bases privadas.",
+    "templates": [
+      {
+        "week": 1,
+        "day": 2,
+        "label": "Semana 1 · martes",
+        "entries": [
+          {
+            "id": "ejemplo-pollo",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-arroz",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-tomates",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 1,
+        "day": 5,
+        "label": "Semana 1 · viernes",
+        "entries": [
+          {
+            "id": "ejemplo-garbanzos",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-huevos",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-patatas",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 2,
+        "day": 2,
+        "label": "Semana 2 · martes",
+        "entries": [
+          {
+            "id": "ejemplo-garbanzos",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-huevos",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-patatas",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 2,
+        "day": 5,
+        "label": "Semana 2 · viernes",
+        "entries": [
+          {
+            "id": "ejemplo-pan",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-queso",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-tomates",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 3,
+        "day": 2,
+        "label": "Semana 3 · martes",
+        "entries": [
+          {
+            "id": "ejemplo-pan",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-queso",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-tomates",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 3,
+        "day": 5,
+        "label": "Semana 3 · viernes",
+        "entries": [
+          {
+            "id": "ejemplo-guisantes",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-pollo",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-arroz",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 4,
+        "day": 2,
+        "label": "Semana 4 · martes",
+        "entries": [
+          {
+            "id": "ejemplo-guisantes",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-pollo",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-arroz",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      },
+      {
+        "week": 4,
+        "day": 5,
+        "label": "Semana 4 · viernes",
+        "entries": [
+          {
+            "id": "ejemplo-pollo",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-arroz",
+            "reason": "Menú ficticio de demostración"
+          },
+          {
+            "id": "ejemplo-tomates",
+            "reason": "Menú ficticio de demostración"
+          }
+        ],
+        "notes": []
+      }
+    ],
+    "habits": [
+      {
+        "id": "ejemplo-yogur",
+        "reason": "Habitual ficticio",
+        "kind": "habit",
+        "intervalDays": 7
+      },
+      {
+        "id": "ejemplo-platanos",
+        "reason": "Fruta de ejemplo",
+        "kind": "habit",
+        "intervalDays": 6
+      }
+    ]
+  }
 }

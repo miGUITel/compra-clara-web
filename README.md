@@ -1,4 +1,4 @@
-# Compra Clara · versión 0.3
+# Compra Clara · versión 0.4
 
 Interfaz y demo para probar en el móvil. Web estática publicada en https://miguitel.github.io/compra-clara-web/ mediante GitHub Pages: rama main, carpeta /docs.
 
@@ -24,7 +24,15 @@ Las credenciales del conector del asistente no se comparten con la web. El usuar
 - Si hay conflicto, Revisar GitHub permite comparar ambas listas, descargar el borrador y elegir explícitamente cargar la versión de GitHub. Una lectura fallida conserva lo anterior. No hay reintentos ni sobrescrituras automáticas.
 - Se conservan campos adicionales de estado.json, productos añadidos manualmente y correcciones anteriores.
 
-Las propuestas son datos fijos preparados por el asistente. Cambiar fechas no recalcula un menú ni estima existencias. La app no ejecuta IA, no lee Drive, no analiza nuevos tickets y no garantiza funcionamiento sin conexión.
+Las propuestas contienen ocho bases fijas (cuatro semanas × martes/viernes), habituales, candidatos de reposición y un anclaje del ciclo. El botón Proponer compra permite elegir Hoy, Este martes, Este viernes u otra fecha, la siguiente visita (hasta 28 días) y la semana del ciclo. La app combina las bases que cubren el intervalo y presenta una vista previa seleccionable. No hay IA ni lectura de tickets en la web.
+
+Las bases cubren tramos entre visitas, no ingredientes desglosados por comida. Retrasar una visita conserva candidatos de su base; el usuario aparta los platos ya resueltos. Al ampliar el horizonte se combinan bases, sin multiplicar automáticamente cantidades ni incluir platos opcionales de fin de semana. Una fecha de siguiente visita es el límite del intervalo y queda fuera de esta compra. El cálculo del ciclo usa días civiles con aritmética UTC, por lo que sigue estable al cambiar mes, año o horario.
+
+Aplicar una propuesta conserva productos, cantidades, marcas y campos adicionales; no suma de nuevo productos presentes, incluso si tienen un ID personalizado y el mismo nombre. Las cantidades desconocidas quedan como Por confirmar y se editan antes de comprar. Se puede archivar explícitamente lo ya comprado; viene desactivado. La corrección de la semana se guarda en estado.json como anclaje personal para futuras compras.
+
+Todavía tengo se limita a la compra actual; Apartar hasta admite una fecha incluida y Ya no lo compro es permanente. Preferencias permite restaurar exclusiones personales y productos aplazados. Marcar comprado registra la fecha y desmarcar anula esa señal. Las compras recientes filtran candidatos habituales según su intervalo, mirando hasta la siguiente visita; los ingredientes de menú siguen requiriendo revisión. Las frecuencias describen patrones de compra y no acreditan existencias.
+
+Las credenciales y los datos privados siguen solo en memoria. La app no lee Drive, no analiza nuevos tickets y no garantiza funcionamiento sin conexión.
 
 ## Interfaz
 
@@ -35,6 +43,8 @@ Se pueden añadir, editar y retirar productos, marcar comprados, filtrar, copiar
 ## Código
 
 - docs/app.mjs: interfaz, separación entre demo y sesión privada.
+- docs/planner.mjs: fechas, ocho bases, ciclo, selección de candidatos y aplicación sin duplicados.
+- docs/planner-ui.mjs y docs/planner.css: vista previa y controles compactos de planificación.
 - docs/logic.mjs: orden, cantidades y validación básica.
 - docs/data-model.mjs: validación de los documentos privados.
 - docs/github-store.mjs: acceso exclusivo al repositorio privado, UTF-8, SHA y confirmación de guardados.
@@ -46,7 +56,7 @@ No se usan dependencias externas, CDN ni scripts de terceros. La política CSP l
 
 ## Verificación
 
-Ejecutar: node --test tests/private-data.test.mjs
+Ejecutar: node --test tests/*.test.mjs
 
 Las pruebas cubren lecturas coherentes, escritura con SHA, dos dispositivos, conservación del borrador, respuestas perdidas, errores de permisos, datos inválidos, campos adicionales, UTF-8, desconexión y bloqueo de envíos simultáneos. No crean productos de prueba en los datos reales.
 

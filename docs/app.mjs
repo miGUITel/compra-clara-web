@@ -1,12 +1,14 @@
-import { normalize, sortedItems, addItem, availableSuggestions, listText, validState } from './logic.mjs?v=0.3';
-import { GithubStore } from './github-store.mjs?v=0.3.1';
-import { PrivateSession } from './private-session.mjs?v=0.3.1';
+import { bindPlanner } from './planner-ui.mjs?v=0.4';
+import { isDay, validatePlanner, validatePlanningState } from './planner.mjs?v=0.4';
+import { normalize, sortedItems, addItem, availableSuggestions, listText, validState } from './logic.mjs?v=0.4';
+import { GithubStore } from './github-store.mjs?v=0.4';
+import { PrivateSession } from './private-session.mjs?v=0.4';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const icon = name => `<svg aria-hidden="true"><use href="#${name}"/></svg>`;
 const escape = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const storageKey = 'compra-clara-mobile-test-v1';
-let demoData, session = null, connecting = false, pendingRemote = null, syncError = '';
+let plannerUI, demoData, session = null, connecting = false, pendingRemote = null, syncError = '';
 let data, state, filter = 'all', editId = null, selectedProduct = null, toastTimer, view = 'lista', canSave = true;
 const isoDay = () => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
 const plusDays = (day, count) => { const d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + count); return d.toISOString().slice(0, 10); };
@@ -29,7 +31,7 @@ function save() {
   $('#save-status').textContent = canSave ? 'Guardado en este dispositivo' : 'Sin guardar · descarga una copia';
   return canSave;
 }
-function record(type, item, extra = {}) { state.feedback.push({ type, productId: item.id, name: item.name, date: new Date().toISOString(), ...extra }); }
+function record(type, item, extra = {}) { state.feedback.push({ type, productId: item.id, name: item.name, date: new Date().toISOString(), tripDate: state.tripDate, ...extra }); }
 function switchView(next) {
   if (!['lista', 'propuestas', 'preferencias'].includes(next)) next = 'lista';
   view = next;
@@ -50,7 +52,7 @@ function renderList() {
   let html = '', lastSection;
   for (const item of visible) {
     if (state.showSections && item.section !== lastSection) { html += `<div class="section-heading"><span class="section-number">${escape(item.section.padStart(2,'0'))}</span>${escape(sectionName(item.section))}<span class="section-line"></span></div>`; lastSection = item.section; }
-    html += `<div class="product-row ${item.done ? 'done' : ''}" data-item="${escape(item.id)}"><button class="product-check" data-toggle="${escape(item.id)}" aria-pressed="${item.done}" aria-label="${item.done ? 'Marcar pendiente' : 'Marcar comprado'}: ${escape(item.name)}"><span class="checkbox-mark">${icon('check')}</span></button><button class="product-info" data-edit="${escape(item.id)}" aria-label="Editar ${escape(item.name)}"><span class="product-name">${escape(item.name)}</span>${item.source === 'suggestion' ? '<span class="product-origin">Propuesta añadida por ti</span>' : ''}${item.provisional ? '<span class="product-origin">Ubicación provisional</span>' : ''}</button><button class="quantity-button" data-edit="${escape(item.id)}" aria-label="Cantidad de ${escape(item.name)}: ${escape(item.quantity)}">${escape(item.quantity)}</button><button class="row-more" data-edit="${escape(item.id)}" aria-label="Opciones de ${escape(item.name)}">${icon('more')}</button></div>`;
+    html += `<div class="product-row ${item.done ? 'done' : ''}" data-item="${escape(item.id)}"><button class="product-check" data-toggle="${escape(item.id)}" aria-pressed="${item.done}" aria-label="${item.done ? 'Marcar pendiente' : 'Marcar comprado'}: ${escape(item.name)}"><span class="checkbox-mark">${icon('check')}</span></button><button class="product-info" data-edit="${escape(item.id)}" aria-label="Editar ${escape(item.name)}"><span class="product-name">${escape(item.name)}</span>${item.source === 'suggestion' ? '<span class="product-origin">Propuesta añadida por ti</span>' : ''}${item.provisional ? '<span class="product-origin">Ubicación provisional</span>' : ''}</button><button class="quantity-button ${item.needsQuantity ? 'needs-quantity' : ''}" data-edit="${escape(item.id)}" aria-label="Cantidad de ${escape(item.name)}: ${escape(item.quantity)}">${escape(item.quantity)}</button><button class="row-more" data-edit="${escape(item.id)}" aria-label="Opciones de ${escape(item.name)}">${icon('more')}</button></div>`;
   }
   if (!visible.length) {
     const text = filter === 'done' ? ['Todavía no has marcado productos', 'Toca la casilla de un producto cuando lo hayas comprado.'] : filter === 'pending' && total ? ['¡Todo comprado!', 'Has completado esta lista.'] : ['Un buen comienzo', 'Añade tus productos o revisa las propuestas.'];
@@ -87,17 +89,18 @@ function renderSettings() {
   $('#details-title').textContent = session ? 'Tu lista compartida' : 'Acerca de la demo';
   $('#details-copy').textContent = session ? 'Los cambios quedan pendientes hasta que pulses Guardar en GitHub. En otro dispositivo, conecta y pulsa Actualizar para recuperar la última lista. Recargar o cerrar termina esta sesión y descarta los cambios que no hayas guardado.' : 'La demo utiliza productos ficticios y conserva sus cambios en este navegador. Conecta para usar tus datos privados.';
   $('#reset-demo').hidden = !!session;
-  $('#data-footer').textContent = session ? 'Datos privados · GitHub · v0.3' : 'Demo 0.3 · Guardado en este dispositivo';
+  $('#data-footer').textContent = session ? 'Datos privados · GitHub · v0.4' : 'Demo 0.4 · Guardado en este dispositivo';
   const excluded = [...data.excluded, ...state.excludedIds.map(id => productFor(id)?.name || state.feedback.find(f => f.productId === id)?.name).filter(Boolean)];
   $('#exclusions').innerHTML = [...new Set(excluded)].map(name => `<span>${escape(name)}</span>`).join('');
   $('#route-list').innerHTML = data.sections.map(([id, name]) => `<div class="route-item"><span class="section-number">${escape(id.padStart(2,'0'))}</span><span>${escape(name)}</span></div>`).join('');
+  $('#personal-exclusions').innerHTML = state.excludedIds.filter(id => !data.reservedIds?.includes(id)).map(id => '<button class="text-button" data-restore-exclusion="' + escape(id) + '">Volver a proponer: ' + escape(productFor(id)?.name || id) + '</button>').join('') + Object.entries(state.deferredUntil || {}).map(([id,day]) => '<button class="text-button" data-restore-deferred="' + escape(id) + '">' + escape(productFor(id)?.name || id) + ': apartado hasta ' + escape(formatDay(day)) + ' · Restaurar</button>').join('');
   $('#feedback-count').textContent = `${state.feedback.length} correcciones registradas en esta lista.`;
 }
 function render() {
   $('#product-section').innerHTML = data.sections.map(([id,name]) => `<option value="${escape(id)}">${escape(id)} · ${escape(name)}</option>`).join('');
   document.body.classList.toggle('hide-sections', !state.showSections);
   $('#toggle-sections').setAttribute('aria-pressed', String(state.showSections));
-  renderList(); renderSuggestions(); renderSettings(); renderConnection();
+  renderList(); renderSuggestions(); renderSettings(); renderConnection(); plannerUI?.refresh();
 }
 function openProduct(id = null) {
   editId = id; selectedProduct = id ? productFor(id) : null;
@@ -106,8 +109,10 @@ function openProduct(id = null) {
   $('#product-dialog-title').textContent = id ? 'Un pequeño ajuste' : 'Añadir producto';
   $('#product-kicker').textContent = id ? 'TU LISTA, TUS REGLAS' : 'A TU LISTA';
   $('#product-submit').textContent = id ? 'Guardar cambios' : 'Añadir a mi lista';
-  $('#product-name').value = item?.name || ''; $('#product-qty').value = item?.quantity || (session ? '' : '1 unidad');
+  $('#product-name').value = item?.name || ''; $('#product-qty').value = item?.needsQuantity ? '' : item?.quantity || (session ? '' : '1 unidad');
   $('#product-section').value = item?.section || '16'; $('#edit-actions').hidden = !item;
+  $('#defer-controls').hidden = !item; $('#defer-until').value = ''; $('#defer-until').min = state.tripDate > isoDay() ? state.tripDate : isoDay();
+  $('#product-why').textContent = item?.reason || ''; $('#product-why').hidden = !item?.reason;
   $('#product-dialog').showModal(); setTimeout(() => (id ? $('#product-qty') : $('#product-name')).focus(), 20);
 }
 function suggest(id) {
@@ -141,10 +146,12 @@ function bind() {
     if (b.classList.contains('add-open')) openProduct();
     if (b.classList.contains('close-dialog')) closeDialog(event);
     if (b.dataset.filter) { filter = b.dataset.filter; $$('[data-filter]').forEach(el => { const selected = el === b; el.classList.toggle('selected', selected); el.setAttribute('aria-pressed', String(selected)); }); renderList(); }
-    if (b.dataset.toggle) { const item = state.items.find(i => i.id === b.dataset.toggle); item.done = !item.done; save(); render(); }
+    if (b.dataset.toggle) { const item = state.items.find(i => i.id === b.dataset.toggle); item.done = !item.done; if (item.done) { item.boughtOn = isoDay(); record('purchase-marked', item, { quantity: item.quantity, purchaseDate: item.boughtOn }); } else { delete item.boughtOn; record('purchase-unmarked', item); } save(); render(); }
     if (b.dataset.edit) openProduct(b.dataset.edit);
     if (b.dataset.suggest) suggest(b.dataset.suggest);
     if (b.dataset.have) have(b.dataset.have);
+    if (b.dataset.restoreExclusion) { state.excludedIds = state.excludedIds.filter(id => id !== b.dataset.restoreExclusion); save(); render(); }
+    if (b.dataset.restoreDeferred) { delete state.deferredUntil[b.dataset.restoreDeferred]; save(); render(); }
     if (b.dataset.choose) {
       selectedProduct = productFor(b.dataset.choose); $('#product-name').value = selectedProduct.name; $('#product-qty').value = selectedProduct.quantity; $('#product-section').value = selectedProduct.section;
       $('#product-matches').hidden = true; $('#product-name').setAttribute('aria-expanded','false'); $('#product-qty').focus();
@@ -165,7 +172,7 @@ function bind() {
       const item = state.items.find(i => i.id === editId); if (!item) return;
       const duplicate = state.items.find(i => i.id !== editId && normalize(i.name) === normalize(name));
       if (duplicate) { notify('Ese producto ya está en otra fila. Ajusta allí su cantidad.', true); return; }
-      record('edited', item, { before: { name: item.name, quantity: item.quantity, section: item.section }, after: { name, quantity, section } }); Object.assign(item, { name, quantity, section });
+      record('edited', item, { before: { name: item.name, quantity: item.quantity, section: item.section }, after: { name, quantity, section } }); Object.assign(item, { name, quantity, section, needsQuantity: false });
     } else {
       const known = selectedProduct || products().find(p => [p.name, ...(p.aliases || [])].some(n => normalize(n) === normalize(name)));
       if (known && state.excludedIds.includes(known.id)) { notify('Lo habías marcado como «Ya no lo compro». Puedes revisar tus exclusiones en Preferencias.', true); return; }
@@ -174,6 +181,12 @@ function bind() {
       addItem(state, p, quantity, 'manual'); record('manual-added', p, { quantity });
     }
     const saved = save(); render(); $('#product-dialog').close(); if (saved) notify(editId ? 'Cambios guardados' : 'Producto añadido a tu lista');
+  });
+  $('#defer-product').addEventListener('click', () => {
+    const day = $('#defer-until').value, item = state.items.find(i => i.id === editId);
+    if (!item || !isDay(day) || day < $('#defer-until').min) { $('#defer-until').reportValidity(); notify('Indica hasta qué fecha quieres apartarlo.', true); return; }
+    state.deferredUntil ||= {}; state.deferredUntil[item.id] = day; record('deferred', item, { until: day });
+    state.items = state.items.filter(i => i.id !== item.id); save(); render(); $('#product-dialog').close(); notify('Apartado hasta el ' + formatDay(day, true) + ', incluido.');
   });
   $('#have-product').addEventListener('click', () => { have(editId); $('#product-dialog').close(); });
   $('#remove-product').addEventListener('click', () => { const item = state.items.find(i => i.id === editId); record('removed-from-list', item); state.items = state.items.filter(i => i.id !== editId); const saved = save(); render(); $('#product-dialog').close(); if (saved) notify('Retirado de esta lista'); });
@@ -186,14 +199,14 @@ function bind() {
   $('#next-date').addEventListener('change', () => $('#next-date').setCustomValidity(''));
   $('#dates-form').addEventListener('submit', event => {
     event.preventDefault(); if (connecting || session?.busy) return; if ($('#next-date').value <= $('#trip-date').value) { $('#next-date').setCustomValidity('La siguiente visita debe ser posterior a esta compra.'); $('#next-date').reportValidity(); return; }
-    state.tripDate = $('#trip-date').value; state.nextDate = $('#next-date').value; const saved = save(); renderList(); $('#dates-dialog').close(); if (saved) notify('Fechas guardadas');
+    state.tripDate = $('#trip-date').value; state.nextDate = $('#next-date').value; const saved = save(); render(); $('#dates-dialog').close(); if (saved) notify('Fechas guardadas');
   });
   $('#copy-list').addEventListener('click', async () => {
     const text = listText(state, products()); if (!text) { notify('No quedan productos pendientes para copiar.'); return; }
     try { await navigator.clipboard.writeText(text); notify('Lista pendiente copiada, por orden de sección'); }
     catch { $('#copy-text').value = text; $('#copy-dialog').showModal(); $('#copy-text').select(); }
   });
-  $('#clear-done').addEventListener('click', () => { const n = state.items.filter(i => i.done).length; if (!confirm(`¿Retirar ${n} productos comprados de esta lista?`)) return; state.items.filter(i => i.done).forEach(i => { record('purchased', i, { quantity: i.quantity }); if (!state.snoozed.includes(i.id)) state.snoozed.push(i.id); }); state.items = state.items.filter(i => !i.done); save(); render(); });
+  $('#clear-done').addEventListener('click', () => { const n = state.items.filter(i => i.done).length; if (!confirm(`¿Retirar ${n} productos comprados de esta lista?`)) return; state.items.filter(i => i.done).forEach(i => { record('purchased', i, { quantity: i.quantity, purchaseDate: i.boughtOn || state.tripDate }); if (!state.snoozed.includes(i.id)) state.snoozed.push(i.id); }); state.items = state.items.filter(i => !i.done); save(); render(); });
   $('#add-all').addEventListener('click', () => {
     const pending = availableSuggestions(data, state).filter(s => !state.items.some(i => i.id === s.id) && productFor(s.id).quantity);
     pending.forEach(s => { const p = productFor(s.id); addItem(state, p, p.quantity, 'suggestion'); record('suggestion-added', p); }); const saved = save(); render(); if (saved) notify(`${pending.length} propuestas añadidas. Revisa sus cantidades.`);
@@ -234,7 +247,7 @@ function renderConnection() {
   $('#save-status').textContent = session.dirty ? 'Cambios pendientes en esta sesión' : 'Guardado en GitHub';
 }
 function selectSessionData() {
-  data = session.data; state = session.state; state.showSections = state.showSections === true;
+  plannerUI?.clear(); data = session.data; state = session.state; state.showSections = state.showSections === true;
   render();
 }
 function reviewMarkup(value) {
@@ -305,9 +318,9 @@ function bindConnection() {
   $('#disconnect-github').addEventListener('click', () => {
     if (!session || session.busy) return;
     if (session.dirty && !confirm('Hay cambios sin guardar. Cancela y descarga una copia si quieres conservarlos. ¿Desconectar y descartar este borrador?')) return;
-    session.dispose(); session = null; pendingRemote = null; selectedProduct = null; editId = null; syncError = '';
+    plannerUI?.clear(); session.dispose(); session = null; pendingRemote = null; selectedProduct = null; editId = null; syncError = '';
     data = demoData; state = demoStateCache || makeState(); demoStateCache = null;
-    $('#product-form').reset(); $('#dates-form').reset(); $('#copy-text').value = '';
+    $('#product-form').reset(); $('#dates-form').reset(); $('#product-why').textContent = ''; $('#personal-exclusions').replaceChildren(); $('#copy-text').value = '';
     $('#product-matches').replaceChildren(); $('#product-matches').hidden = true;
     $$('dialog').forEach(d => { if (d.open) d.close(); });
     render(); $('#save-status').textContent = 'Demo guardada en este dispositivo';
@@ -315,13 +328,13 @@ function bindConnection() {
   });
 }
 try {
-  const response = await fetch('./data.json', { cache: 'no-store' }); if (!response.ok) throw new Error('Data unavailable'); data = await response.json(); demoData = data;
+  const response = await fetch('./data.json', { cache: 'no-store' }); if (!response.ok) throw new Error('Data unavailable'); data = await response.json(); data.planner = validatePlanner(data.planner, data.products); demoData = data;
   let raw = null; try { raw = localStorage.getItem(storageKey); } catch { canSave = false; }
-  if (raw) { try { const parsed = JSON.parse(raw); if (validState(parsed, data)) state = parsed; else notify('La copia guardada no es válida. Se muestran los datos iniciales.', true); } catch { notify('No se pudo recuperar la copia guardada.',true); } }
+  if (raw) { try { const parsed = JSON.parse(raw); if (validState(parsed, data) && validatePlanningState(parsed)) state = parsed; else notify('La copia guardada no es válida. Se muestran los datos iniciales.', true); } catch { notify('No se pudo recuperar la copia guardada.',true); } }
   state ||= makeState();
   state.showSections = state.showSections === true;
   $('#product-section').innerHTML = data.sections.map(([id, name]) => `<option value="${escape(id)}">${escape(id)} · ${escape(name)}</option>`).join('');
-  bind(); bindConnection(); render(); switchView(location.hash.slice(1));
+  bind(); bindConnection(); plannerUI = bindPlanner({ getData: () => data, getState: () => state, setState: value => { state = value; }, save, render, notify, escape, isoDay, formatDay, busy: () => connecting || !!session?.busy }); render(); switchView(location.hash.slice(1));
   if (!canSave) { $('#save-status').textContent = 'Sin guardado local disponible'; notify('Este navegador no permite guardar. Puedes descargar una copia.', true); }
 } catch (error) {
   $('#shopping-list').innerHTML = '<div class="empty-state"><h3>No se pudo abrir la demo</h3><p>Comprueba tu conexión y vuelve a cargar esta página.</p></div>';

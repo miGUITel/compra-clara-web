@@ -1,4 +1,4 @@
-import { assembleData, validatePrivateState, clone } from './data-model.mjs?v=0.3';
+import { assembleData, validatePrivateState, clone } from './data-model.mjs?v=0.4';
 export const REPOSITORY = 'miGUITel/compra-clara-datos';
 const API = `https://api.github.com/repos/${REPOSITORY}`;
 const SHA = /^[a-f0-9]{40,64}$/i;

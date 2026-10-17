@@ -1,4 +1,5 @@
-import { validState } from './logic.mjs?v=0.3';
+import { validState } from './logic.mjs?v=0.4';
+import { validatePlanner, validatePlanningState } from './planner.mjs?v=0.4';
 const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const text = (v, max = 1000) => typeof v === 'string' && v.length <= max;
 const nonempty = (v, max = 1000) => text(v,max) && !!v.trim();
@@ -24,10 +25,11 @@ export function assembleData(catalog, rules, proposals) {
   return { schemaVersion:1, sections:clone(catalog.sections), products:clone(catalog.products), initialList:[],
     excluded:clone(rules.excluded), reservedIds:clone(rules.excludedIds), suggestions:clone(proposals.suggestions),
     rules:clone(rules.displayRules), notice:proposals.notice, source:clone(catalog.source || {}),
-    reviewDate:proposals.reviewDate || '', ticketsCutoff:proposals.ticketsCutoff || '' };
+    reviewDate:proposals.reviewDate || '', ticketsCutoff:proposals.ticketsCutoff || '',
+    planner:validatePlanner(proposals.planner,catalog.products,rules.excludedIds) };
 }
 export function validatePrivateState(state, data) {
-  if (!validState(state,data) || state.listId !== 'compra-principal' || state.demo === true
+  if (!validState(state,data) || !validatePlanningState(state) || state.listId !== 'compra-principal' || state.demo === true
     || state.items.some(i=>data.reservedIds.includes(i.id))
     || state.feedback.length > 20000 || !state.feedback.every(f=>object(f) && nonempty(f.type,100) && nonempty(f.productId,100) && text(f.name,100) && nonempty(f.date,50))) {
     throw new Error('La lista privada no tiene un formato válido. Se conserva el borrador anterior.');

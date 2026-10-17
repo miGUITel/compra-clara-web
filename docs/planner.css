@@ -1,0 +1,49 @@
+/* Compact planning controls, with the same contrast and touch targets as the list. */
+.intro-controls{flex-wrap:wrap;justify-content:flex-end}
+.plan-summary{margin:-4px 0 14px;color:#344d39;font-size:13px;line-height:1.5}
+#plan-dialog{width:min(760px,calc(100% - 24px));padding:22px;scroll-padding-bottom:110px}
+#plan-dialog .dialog-header{margin-bottom:12px}
+.plan-presets{display:flex;gap:8px;flex-wrap:wrap}
+.plan-presets button{min-height:44px;padding:9px 14px;border:1px solid #718467;border-radius:8px;font-size:14px;color:#234931;background:#eff5e9}
+.plan-presets button:hover{background:#dceacd}
+.plan-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.plan-fields>div{min-width:0}.plan-fields input,.plan-fields select{min-width:0}
+.plan-explanation{margin:13px 0;color:#344d39;font-size:13px;line-height:1.6}
+.plan-explanation summary{cursor:pointer;min-height:44px;padding:9px 0;font-weight:600}
+.plan-explanation p,.plan-explanation li{margin:7px 0}.plan-explanation ul{padding-left:20px}
+.plan-bases{font-size:13px;font-weight:650;color:#234931;line-height:1.6;margin:12px 0 6px}
+.plan-preview{border-top:1px solid #ccd5c9}
+.plan-item{padding:7px 0;border-bottom:1px solid #dce3d8}
+.plan-choice{display:flex;gap:10px;align-items:center;margin:0;min-height:49px;cursor:pointer}
+.plan-choice input,.plan-retire input{width:22px;min-height:22px;height:22px;flex:0 0 22px;accent-color:#174e3d;padding:0}
+.plan-choice strong{font-size:14px;color:#25372e;font-weight:600;line-height:1.4;display:block}
+.plan-choice small{display:block;font-size:12px;line-height:1.5;color:#4b5d50;margin-top:2px}
+.plan-item details{padding-left:32px;font-size:12px;color:#4b5d50}
+.plan-item summary{cursor:pointer;min-height:32px;padding:5px 0;width:max-content}
+.plan-item details p{line-height:1.6;margin:3px 0 8px;white-space:normal}
+.plan-existing{background:#f3f6ef}.plan-existing .plan-choice{cursor:default}
+.plan-retire{display:flex;gap:10px;align-items:center;font-size:13px;line-height:1.5;padding:10px;border:1px solid #ae8a53;border-radius:8px;background:#fff5e5}
+.plan-footer{position:sticky;bottom:-22px;background:#fff;flex-wrap:wrap;margin-top:14px;padding:12px 0 6px;align-items:center;z-index:1}
+#plan-count{font-size:12px;color:#344d39;margin-right:auto;width:100%;min-height:18px}
+.needs-quantity,.plan-choice small.needs-quantity{color:#744016;background:#fff0d2}
+.quantity-button.needs-quantity{border-color:#aa793b}
+.defer-row{display:flex;align-items:center;gap:8px}.defer-row input{flex:1;min-width:0}.defer-row button{flex:0 0 auto}
+.product-why{white-space:pre-line;border-top:1px solid #ccd5c9;padding-top:12px}
+.personal-exclusions{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:8px}
+.personal-exclusions button{min-height:44px;text-align:left;line-height:1.5}
+@media(max-width:760px){
+ .intro-controls{justify-content:space-between;gap:7px}
+ .intro-controls .date-button{width:100%;min-height:30px}
+ .intro-controls .planner-open,.intro-controls .add-open{flex:1;justify-content:center;padding:10px 8px}
+ #plan-dialog{padding:17px;max-height:90dvh}
+ .plan-fields{grid-template-columns:1fr 1fr;gap:8px}
+ .plan-fields>div:last-child{grid-column:1/-1}
+ .plan-fields label{font-size:13px;margin-top:12px}
+ .plan-fields input{padding:10px 5px;font-size:15px}
+ .plan-presets{gap:6px}.plan-presets button{flex:1;padding:8px;font-size:13px}
+ .plan-footer{bottom:-17px;padding-bottom:6px}.plan-footer .button{flex:1;justify-content:center}
+ .plan-summary{font-size:12px;margin-bottom:10px}
+ #view-propuestas .page-intro{display:flex;flex-wrap:wrap;gap:8px}
+ #view-propuestas .page-intro>div{width:100%}
+ #view-propuestas .page-intro>.button{margin-top:4px;flex:1;font-size:13px;padding:10px}
+}
