@@ -1,6 +1,6 @@
 import { normalize, sortedItems, addItem, availableSuggestions, listText, validState } from './logic.mjs?v=0.3';
-import { GithubStore } from './github-store.mjs?v=0.3';
-import { PrivateSession } from './private-session.mjs?v=0.3';
+import { GithubStore } from './github-store.mjs?v=0.3.1';
+import { PrivateSession } from './private-session.mjs?v=0.3.1';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const icon = name => `<svg aria-hidden="true"><use href="#${name}"/></svg>`;

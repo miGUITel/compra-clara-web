@@ -26,7 +26,7 @@ export class GithubStore {
   #token; #fetch; #timeout;
   constructor({token,fetchImpl=globalThis.fetch,timeoutMs=15000}={}) {
     if(typeof token!=='string'||!token.trim())throw new GithubError('MISSING_TOKEN','Introduce un token de GitHub.');
-    this.#token=token.trim();this.#fetch=fetchImpl;this.#timeout=timeoutMs;
+    this.#token=token.trim();this.#fetch=fetchImpl.bind(globalThis);this.#timeout=timeoutMs;
   }
   dispose(){this.#token='';}
   async #request(path,{method='GET',body}={}) {

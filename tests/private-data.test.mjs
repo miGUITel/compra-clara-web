@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.3';
-import { PrivateSession } from '../docs/private-session.mjs?v=0.3';
+import { GithubStore, encodeJson, decodeJson } from '../docs/github-store.mjs?v=0.3.1';
+import { PrivateSession } from '../docs/private-session.mjs?v=0.3.1';
 import { assembleData, validatePrivateState, clone } from '../docs/data-model.mjs?v=0.3';
 import { sortedItems, validState } from '../docs/logic.mjs?v=0.3';
 
@@ -57,6 +57,10 @@ function add(session,name='Nuevo producto') {session.state.items.push({id:'custo
 test('Unicode and literal markup survive UTF-8 encoding',()=>{
   const value={name:'Jamón 🧀',note:'<img src=x onerror=alert(1)>',text:'línea\nsegunda'};
   assert.deepEqual(decodeJson(encodeJson(value)),value);
+});
+test('browser fetch is invoked with the global receiver',async()=>{
+  const store=new GithubStore({token:'test-only-token',fetchImpl:function(){assert.equal(this,globalThis);return Promise.resolve({ok:false,status:401});}});
+  await assert.rejects(store.readSnapshot(),e=>e.code==='HTTP_401');
 });
 test('one coherent snapshot pins all four reads to the same commit',async()=>{
   const server=fakeGithub(),s=await connected(server);
